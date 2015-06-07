@@ -131,7 +131,7 @@ def to_csv(infractions):
         writer.writerow([
             infraction['name'],
             'variable' if infraction['variable'] else infraction['cost'],
-        ]+ infraction['breakdown'] + [
+        ]+ [(x if x > 0 else "") for x in infraction['breakdown']] + [
             infraction['category'],
             infraction['description'],
         ])

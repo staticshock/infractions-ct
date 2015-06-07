@@ -74,10 +74,10 @@ def parse_infractions(input_file):
                 # costs[0] may be a string, such as "See Note" or "See Appx A"
                 cur_infraction['variable'] = not isinstance(costs[0], float)
                 if cur_infraction['variable']:
-                    cur_infraction['cost'] = ""
+                    cur_infraction['total'] = ""
                     cur_infraction['breakdown'] = [""] * 9
                 else:
-                    cur_infraction['cost'] = costs[0]
+                    cur_infraction['total'] = costs[0]
                     cur_infraction['breakdown'] = costs[1:]
 
                 yield cur_infraction
@@ -121,7 +121,7 @@ def to_costs_json(infractions):
             costs[infraction['name']] = {'variable': True}
         else:
             costs[infraction['name']] = {
-                'cost': infraction['cost'],
+                'cost': infraction['total'],
                 'breakdown': infraction['breakdown'],
             }
     return json.dumps(costs, sort_keys=True)
@@ -147,7 +147,7 @@ def to_csv(infractions):
     for infraction in infractions:
         writer.writerow([
             infraction['name'],
-            'variable' if infraction['variable'] else infraction['cost'],
+            'variable' if infraction['variable'] else infraction['total'],
         ]+ [(x if x > 0 else "") for x in infraction['breakdown']] + [
             infraction['category'],
             infraction['description'],

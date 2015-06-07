@@ -9,6 +9,8 @@ import argparse
 def main():
     args = parse_args()
     infractions = list(parse_infractions(args.input))
+    verify(infractions)
+
     if args.format == 'csv':
         to_csv(infractions)
     else:
@@ -91,6 +93,21 @@ def enumerate_costs(costs_line):
             yield float(cost.replace(",", ""))
         else:
             yield cost
+
+
+# Verify data
+def verify(infractions):
+    for infraction in infractions:
+        problems = False
+        if not infraction['variable']:
+            computed = sum(infraction['breakdown'])
+            actual = infraction['total']
+            if computed != actual:
+                print(infraction)
+                print("Expected %, got %s" % (computed, actual))
+                problems = True
+        if problems:
+            raise SystemExit(1)
 
 
 def to_json(infractions):

@@ -123,11 +123,16 @@ def to_descriptions_json(infractions):
 
 def to_csv(infractions):
     writer = csv.writer(sys.stdout)
+    writer.writerow([
+        'NAME', 'TOTAL', 'FINE', 'FEE', 'Z FEE', 'COST', 'SURCHARGE', 'STF',
+        'BIPSA', 'MF', 'PLUS', 'CATEGORY', 'DESCRIPTION'
+    ])
     for infraction in infractions:
         writer.writerow([
             infraction['name'],
             'variable' if infraction['variable'] else infraction['cost'],
         ]+ infraction['breakdown'] + [
+            infraction['category'],
             infraction['description'],
         ])
 

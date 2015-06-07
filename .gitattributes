@@ -1,0 +1,7 @@
+# Whitespace
+* whitespace=tab-in-indent,tabwidth=4
+*.csv whitespace=cr-at-eol
+Makefile whitespace=indent-with-non-tab,tabwidth=4
+
+# Custom hunk headers
+*.py diff=python

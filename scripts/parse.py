@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 import re
+import sys
+import csv
 import json
 import argparse
 
@@ -7,14 +9,21 @@ import argparse
 def main():
     args = parse_args()
     infractions = list(parse_infractions(args.input))
-    if args.costs:
-        print(to_cost_json(infractions))
-    if args.descriptions:
-        print(to_description_json(infractions))
+    if args.format == 'csv':
+        to_csv(infractions)
+    else:
+        # json
+        if args.costs:
+            print(to_costs_json(infractions))
+        elif args.descriptions:
+            print(to_descriptions_json(infractions))
+        else:
+            print(to_json(infractions))
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--format", choices=('json', 'csv'), default='json')
     parser.add_argument("--costs", action='store_true')
     parser.add_argument("--descriptions", action='store_true')
     parser.add_argument('input', type=argparse.FileType('r'))
@@ -42,9 +51,6 @@ def parse_infractions(input_file):
         #   2. Multi-line:  <infraction> <description>
         #                                <more description> <costs>
         else:
-            # First 17 characters are the infraction name
-            # if we have an infraction number, then this is the beginning of a record
-            # if we have costs, then it's the end of a record
             name = line[:16].strip()
             description = line[16:132].strip()
             costs_string = line[132:]
@@ -63,12 +69,14 @@ def parse_infractions(input_file):
             # Presence of costs signals the end of the entry
             if costs_string:
                 costs = list(enumerate_costs(costs_string))
-                if isinstance(costs[0], float):
+                # costs[0] may be a string, such as "See Note" or "See Appx A"
+                cur_infraction['variable'] = not isinstance(costs[0], float)
+                if cur_infraction['variable']:
+                    cur_infraction['cost'] = ""
+                    cur_infraction['breakdown'] = [""] * 9
+                else:
                     cur_infraction['cost'] = costs[0]
                     cur_infraction['breakdown'] = costs[1:]
-                else:
-                    # costs[0] may be a string, such as "See Note" or "See Appx A"
-                    cur_infraction['variable'] = True
 
                 yield cur_infraction
                 cur_infraction = None
@@ -85,7 +93,11 @@ def enumerate_costs(costs_line):
             yield cost
 
 
-def to_cost_json(infractions):
+def to_json(infractions):
+    return json.dumps(infractions, sort_keys=True)
+
+
+def to_costs_json(infractions):
     costs = {}
     for infraction in infractions:
         if infraction.get('variable', False):
@@ -95,10 +107,10 @@ def to_cost_json(infractions):
                 'cost': infraction['cost'],
                 'breakdown': infraction['breakdown'],
             }
-    return to_json(costs)
+    return json.dumps(costs, sort_keys=True)
 
 
-def to_description_json(infractions):
+def to_descriptions_json(infractions):
     descriptions = []
     for infraction in infractions:
         descriptions.append({
@@ -106,12 +118,17 @@ def to_description_json(infractions):
             'category': infraction['category'],
             'description': infraction['description'],
         })
-    return to_json(descriptions)
+    return json.dumps(descriptions, sort_keys=True)
 
 
-def to_json(obj):
-    #return json.dumps(obj, indent=2, separators=(',', ': '))
-    return json.dumps(obj, sort_keys=True)
-
+def to_csv(infractions):
+    writer = csv.writer(sys.stdout)
+    for infraction in infractions:
+        writer.writerow([
+            infraction['name'],
+            'variable' if infraction['variable'] else infraction['cost'],
+        ]+ infraction['breakdown'] + [
+            infraction['description'],
+        ])
 
 main()

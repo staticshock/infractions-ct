@@ -32,13 +32,13 @@ Format of descriptions.json:
 
 https://www.jud.ct.gov/Publications/Infractions/Chart_B.pdf
 
-TOTAL AMT DUE - A sum of all the other columns
-FINE
-FEE - C.G.S. § 51-56a(c)
-Z FEE - CONSTRUCTION, UTILITY, TRAFFIC OR FIRE STATION ZONE (Z) FEE (C.G.S. § 14-212a)
-COST - C.G.S. § 54-143(a)
-SURCHARGE - C.G.S. § 54-143a
-STF - SPECIAL TRANSPORTATION FUND SURCHARGE (C.G.S. § 13b-70)
-BIPSA - Unknown
-MF - MUNICIPAL FEE (MF) (C.G.S. § 51-56a(d))
-PLUS - Unknown
+* TOTAL AMT DUE - A sum of all the other columns
+* FINE
+* FEE - C.G.S. § 51-56a(c)
+* Z FEE - CONSTRUCTION, UTILITY, TRAFFIC OR FIRE STATION ZONE (Z) FEE (C.G.S. § 14-212a)
+* COST - C.G.S. § 54-143(a)
+* SURCHARGE - C.G.S. § 54-143a
+* STF - SPECIAL TRANSPORTATION FUND SURCHARGE (C.G.S. § 13b-70)
+* BIPSA - Unknown
+* MF - MUNICIPAL FEE (MF) (C.G.S. § 51-56a(d))
+* PLUS - Unknown
